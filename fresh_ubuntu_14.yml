@@ -1,0 +1,26 @@
+---
+- hosts: testing
+  sudo: yes
+  gather_facts: yes
+
+  tasks:
+
+#  - name: update distros and upgrade packages for latest versions
+#    apt: update_cache=yes upgrade=dist
+
+  - name: install default packages
+    apt: name={{ item }} state=latest
+    with_items:
+        - htop
+        - iotop
+        - smartmontools
+        - nmap
+
+  - name: install iptables-persistent
+    apt: name=iptables-persistent state=latest
+
+  - name: copy iptables rules
+    copy: src=files/rules.v4.ansible dest=/etc/iptables/ owner=root group=root mode=0644
+
+  - name: set NTP server
+    lineinfile: dest=/etc/crontab.ansible line="0 * * * * root ntpdate ntp4.stratum2.ru >/dev/null"
