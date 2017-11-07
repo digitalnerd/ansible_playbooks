@@ -1,0 +1,11 @@
+---
+- hosts: testing
+  sudo: yes
+  gather_facts: yes
+
+  tasks:
+    - name: install standart packages
+      apt: name={{ item }} state=latest
+      with_items:
+        - htop
+        - iotop 
