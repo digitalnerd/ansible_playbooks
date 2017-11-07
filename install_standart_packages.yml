@@ -9,3 +9,6 @@
       with_items:
         - htop
         - iotop 
+        - vim
+        - sysstat
+        - dmidecode
