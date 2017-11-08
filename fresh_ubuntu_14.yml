@@ -25,7 +25,7 @@
         - sysstat
         - dmidecode
 
-# Iptables install and config
+# Install iptables and config
   - name: install iptables-persistent
     apt: name=iptables-persistent state=latest
 
@@ -35,7 +35,7 @@
   - name: create link for iptables
     shell: /bin/ln -s /etc/init.d/iptables-persistent /etc/init.d/iptables
 
-# Etckeeper install and config
+# Install etckeeper and config
   - name: install etckeeper
     apt: pkg=etckeeper state=latest update_cache=yes
 
@@ -46,7 +46,7 @@
     args:
       chdir: /etc/
 
-# Install and config ssmtp
+# Install ssmtp and config
   - name: install ssmtp, bsd-mailx
     apt: pkg={{ item }} state=latest update_cache=yes
     with_items:
@@ -59,7 +59,19 @@
   - name: set ssmtp aliases
     template: src=templates/mail.rc dest=/etc/mail.rc owner=root group=root mode=0644
 
+# Install zabbix-agent and config
+  - name: install zabbix-agent
+    apt: pkg= state=latest update_cache=yes
 
-# Install NTP-client and config
+  - name: configuring zabbix-agent
+    template: src=templates/zabbix-agent2.4.j2 dest=/etc/zabbix/zabbix_agentd.conf owner=root group=root mode=0644
+
+  - name: restart zabbix-agent
+    service: name=zabbix-agent state=restarted enabled=yes
+
+# Install ntpdate and config
+  - name: install ntpdate
+    apt: pkg=ntpdate state=latest update_cache=yes
+
   - name: set NTP-server
     lineinfile: dest=/etc/crontab line="0 * * * * root ntpdate ntp4.stratum2.ru >/dev/null"
