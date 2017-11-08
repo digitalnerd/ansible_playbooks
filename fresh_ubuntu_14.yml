@@ -74,4 +74,5 @@
     apt: pkg=ntpdate state=latest update_cache=yes
 
   - name: set NTP-server
-    lineinfile: dest=/etc/crontab line="0 * * * * root ntpdate ntp4.stratum2.ru >/dev/null"
+#    lineinfile: dest=/etc/crontab line="0 * * * * root ntpdate ntp4.stratum2.ru >/dev/null"
+    lineinfile: dest=/etc/crontab line="0 * * * * root ntpdate 10.59.3.38 >/dev/null"
