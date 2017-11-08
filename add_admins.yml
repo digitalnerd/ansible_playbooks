@@ -1,0 +1,35 @@
+---
+- hosts: testing
+  sudo: yes
+  gather_facts: yes
+
+  vars:
+    main_grp: linuxadm
+    sudo_rule: "ALL=(ALL) NOPASSWD: ALL"
+
+# Path to get usernames and passwords
+  vars_files:
+    - vars/vars.yml
+
+  tasks:
+
+# Create group
+  - include: tasks/create_group.yml group="{{main_grp}}"
+
+# Add to sudo group
+  - include: tasks/add_sudo_rules.yml group="{{main_grp}}" rule="{{sudo_rule}}"
+
+# Add linux admins
+  - name: add linux admins
+    user: name="{{item.user}}" password="{{item.password}}" shell="{{default_shell}}" groups="{{item.groups}}" comment="{{item.comment}}"
+    with_items: linuxusers
+    register: task
+
+# На всех серверах, что записаны в файле host
+# ???
+  - include: tasks/collect_changed_hosts.yml
+
+# Cleaning sudoers file
+  - name: cleaning sudoers file
+    lineinfile: dest="{{sudoers_file}}" state=absent regexp="^{{item.user}}"
+    with_items: linuxusers
