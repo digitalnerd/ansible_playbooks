@@ -5,9 +5,15 @@
 
   tasks:
 
+# Change locale
+  - name: change locale
+    lineinfile: dest=/etc/default/locale regexp='^LANG="ru' line='LANG="en_US.UTF-8"' backrefs=yes
+
+# Update repos and distr
 #  - name: update distros and upgrade packages for latest versions
 #    apt: update_cache=yes upgrade=dist
 
+# Install default packages
   - name: install default packages
     apt: name={{ item }} state=latest
     with_items:
@@ -15,12 +21,45 @@
         - iotop
         - smartmontools
         - nmap
+        - vim
+        - sysstat
+        - dmidecode
 
+# Iptables install and config
   - name: install iptables-persistent
     apt: name=iptables-persistent state=latest
 
   - name: copy iptables rules
     copy: src=files/rules.v4.ansible dest=/etc/iptables/ owner=root group=root mode=0644
 
-  - name: set NTP server
+  - name: create link for iptables
+    shell: /bin/ln -s /etc/init.d/iptables-persistent /etc/init.d/iptables
+
+# Etckeeper install and config
+  - name: install etckeeper
+    apt: pkg=etckeeper state=latest update_cache=yes
+
+ - name: configuring etckeeper.conf
+    lineinfile: dest=/etc/etckeeper/etckeeper.conf regexp='^VCS="bzr"' line='VCS="git"'
+
+  - command: etckeeper init
+    args:
+      chdir: /etc/
+
+# Install and config ssmtp
+  - name: install ssmtp, bsd-mailx
+    apt: pkg={{ item }} state=latest update_cache=yes
+    with_items:
+        - ssmtp
+        - bsd-mailx
+
+  - name: configuring ssmtp
+    template: src=templates/ssmtp.j2 dest=/etc/ssmtp/ssmtp.conf owner=root group=root mode=0644
+
+  - name: set ssmtp aliases
+    template: src=templates/mail.rc dest=/etc/mail.rc owner=root group=root mode=0644
+
+
+# Install NTP-client and config
+  - name: set NTP-server
     lineinfile: dest=/etc/crontab.ansible line="0 * * * * root ntpdate ntp4.stratum2.ru >/dev/null"
