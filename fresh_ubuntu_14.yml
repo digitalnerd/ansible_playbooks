@@ -62,4 +62,4 @@
 
 # Install NTP-client and config
   - name: set NTP-server
-    lineinfile: dest=/etc/crontab.ansible line="0 * * * * root ntpdate ntp4.stratum2.ru >/dev/null"
+    lineinfile: dest=/etc/crontab line="0 * * * * root ntpdate ntp4.stratum2.ru >/dev/null"
