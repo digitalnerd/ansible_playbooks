@@ -4,11 +4,9 @@
   gather_facts: yes
 
   tasks:
-    - name: install standart packages
-      apt: name={{ item }} state=latest
-      with_items:
-        - htop
-        - iotop 
-        - vim
-        - sysstat
-        - dmidecode
+
+  - name: Installing Fail2Ban
+    apt: pkg=fail2ban state=latest update_cache=yes
+
+  - name: Installing logwatch
+    apt: pkg=logwatch state=latest update_cache=yes

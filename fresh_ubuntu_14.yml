@@ -5,17 +5,17 @@
 
   tasks:
 
-# Change locale
-  - name: change locale
-    lineinfile: dest=/etc/default/locale regexp='^LANG="ru' line='LANG="en_US.UTF-8"' backrefs=yes
-
 # Update repos and distr
 #  - name: update distros and upgrade packages for latest versions
 #    apt: update_cache=yes upgrade=dist
 
+# Change locale
+  - name: change locale
+    lineinfile: dest=/etc/default/locale regexp='^LANG="ru' line='LANG="en_US.UTF-8"' backrefs=yes
+
 # Install default packages
   - name: install default packages
-    apt: name={{ item }} state=latest
+    apt: name={{ item }} state=latest update_cache=yes
     with_items:
         - htop
         - iotop
@@ -27,7 +27,7 @@
 
 # Install iptables and config
   - name: install iptables-persistent
-    apt: name=iptables-persistent state=latest
+    apt: name=iptables-persistent state=latest update_cache=yes
 
   - name: copy iptables rules
     copy: src=files/rules.v4.ansible dest=/etc/iptables/ owner=root group=root mode=0644
@@ -61,7 +61,7 @@
 
 # Install zabbix-agent and config
   - name: install zabbix-agent
-    apt: pkg= state=latest update_cache=yes
+    apt: pkg=zabbix-agent state=latest update_cache=yes
 
   - name: configuring zabbix-agent
     template: src=templates/zabbix-agent2.4.j2 dest=/etc/zabbix/zabbix_agentd.conf owner=root group=root mode=0644
