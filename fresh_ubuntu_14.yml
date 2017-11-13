@@ -7,11 +7,17 @@
 
 # Update repos and distr
 #  - name: update distros and upgrade packages for latest versions
-#    apt: update_cache=yes upgrade=dist
+#    apt: 
+#        update_cache: yes
+#        upgrade: dist
 
 # Change locale
   - name: change locale
-    lineinfile: dest=/etc/default/locale regexp='^LANG="ru' line='LANG="en_US.UTF-8"' backrefs=yes
+    lineinfile:
+        dest: /etc/default/locale
+        regexp: '^LANG="ru'
+        line: 'LANG="en_US.UTF-8"'
+        backrefs: yes
 
 # Install default packages
   - name: install default packages
@@ -27,24 +33,38 @@
 
 # Install iptables and config
   - name: install iptables-persistent
-    apt: name=iptables-persistent state=latest update_cache=yes
+    apt:
+        name: iptables-persistent
+        state: latest
+        update_cache: yes
 
   - name: copy iptables rules
-    copy: src=files/rules.v4.ansible dest=/etc/iptables/ owner=root group=root mode=0644
+    copy:
+        src: files/rules.v4.ansible
+        dest: /etc/iptables/
+        owner: root
+        group: root
+        mode: 0644
 
   - name: create link for iptables
     shell: /bin/ln -s /etc/init.d/iptables-persistent /etc/init.d/iptables
 
 # Install etckeeper and config
   - name: install etckeeper
-    apt: pkg=etckeeper state=latest update_cache=yes
+    apt: 
+        name: etckeeper
+        state: latest
+        update_cache: yes
 
  - name: configuring etckeeper.conf
-    lineinfile: dest=/etc/etckeeper/etckeeper.conf regexp='^VCS="bzr"' line='VCS="git"'
+    lineinfile: 
+        dest: /etc/etckeeper/etckeeper.conf
+        regexp: '^VCS="bzr"'
+        line: 'VCS="git"'
 
   - command: etckeeper init
     args:
-      chdir: /etc/
+        chdir: /etc/
 
 # Install ssmtp and config
   - name: install ssmtp, bsd-mailx
@@ -54,25 +74,89 @@
         - bsd-mailx
 
   - name: configuring ssmtp
-    template: src=templates/ssmtp.j2 dest=/etc/ssmtp/ssmtp.conf owner=root group=root mode=0644
+    template:
+        src: templates/ssmtp.j2
+        dest: /etc/ssmtp/ssmtp.conf
+        owner: root
+        group: root
+        mode: 0644
 
   - name: set ssmtp aliases
-    template: src=templates/mail.rc dest=/etc/mail.rc owner=root group=root mode=0644
+    template: 
+        src: templates/mail.rc
+        dest: /etc/mail.rc
+        owner: root
+        group: root
+         mode: 0644
 
 # Install zabbix-agent and config
   - name: install zabbix-agent
-    apt: pkg=zabbix-agent state=latest update_cache=yes
+    apt: 
+        name: zabbix-agent
+        state: latest
+        update_cache: yes
 
   - name: configuring zabbix-agent
-    template: src=templates/zabbix-agent2.4.j2 dest=/etc/zabbix/zabbix_agentd.conf owner=root group=root mode=0644
+    template: 
+        src: templates/zabbix-agent2.4.j2
+        dest: /etc/zabbix/zabbix_agentd.conf
+        owner: root
+        group: root
+        mode: 0644
 
   - name: restart zabbix-agent
-    service: name=zabbix-agent state=restarted enabled=yes
+    service: 
+        name: zabbix-agent
+        state: restarted
+        enabled: yes
+
+# Install fail2ban and config
+  - name: installing fail2ban
+    apt: 
+        name: fail2ban
+        state: latest
+        update_cache: yes
+
+  - name: copy jail.conf
+    template:
+        src: templates/jail.conf.j2
+        dest: /etc/fail2ban/jail.conf
+        owner: root
+        group: root
+        mode: 0644
+
+# Install logwatch and config
+  - name: installing logwatch
+    apt: 
+        name: logwatch
+        state: latest
+        update_cache: yes
+
+  - name: mdkir /var/cache/logwatch
+    file: 
+        path: /var/cache/logwatch
+        state: directory
+        mode: 0744
+
+  - name: copy logwatch.conf
+    template:
+        src: templates/logwatch.conf.j2
+        dest: /etc/logwatch/conf/logwatch.conf
+        owner: root
+        group: root
+        mode: 0644
+
+  - name: run logwatch
+    shell: /usr/sbin/logwatch --output mail
 
 # Install ntpdate and config
   - name: install ntpdate
-    apt: pkg=ntpdate state=latest update_cache=yes
+    apt: 
+        name: ntpdate
+        state: latest
+        update_cache: yes
 
   - name: set NTP-server
 #    lineinfile: dest=/etc/crontab line="0 * * * * root ntpdate ntp4.stratum2.ru >/dev/null"
-    lineinfile: dest=/etc/crontab line="0 * * * * root ntpdate 10.59.3.38 >/dev/null"
+    lineinfile: 
+        dest: /etc/crontab line="0 * * * * root ntpdate 10.59.3.38 >/dev/null"
