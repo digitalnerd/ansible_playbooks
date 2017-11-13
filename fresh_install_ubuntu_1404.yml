@@ -6,7 +6,7 @@
   tasks:
 
 ### Update repos and distr
-#  - name: update distros and upgrade packages for latest versions
+#  - name: update repos and upgrade distr
 #    apt: 
 #        update_cache: yes
 #        upgrade: dist
