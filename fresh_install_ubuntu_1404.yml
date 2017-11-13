@@ -1,0 +1,165 @@
+---
+- hosts: testing
+  sudo: yes
+  gather_facts: yes
+
+  tasks:
+
+# Update repos and distr
+#  - name: update distros and upgrade packages for latest versions
+#    apt: 
+#        update_cache: yes
+#        upgrade: dist
+
+### Change locale
+  - name: change locale
+    lineinfile:
+        dest: /etc/default/locale
+        regexp: '^LANG="ru'
+        line: 'LANG="en_US.UTF-8"'
+        backrefs: yes
+
+### Install default packages
+  - name: install default packages
+    apt: name={{ item }} state=latest update_cache=yes
+    with_items:
+        - htop
+        - iotop
+        - smartmontools
+        - nmap
+        - vim
+        - sysstat
+        - dmidecode
+
+### Install iptables and config
+  - name: install iptables-persistent
+    apt:
+        name: iptables-persistent
+        state: latest
+        update_cache: yes
+
+  - name: copy iptables rules
+    template:
+        src: templates/rules.v4.j2
+        dest: /etc/iptables/rules.v4
+        owner: root
+        group: root
+        mode: 0644
+
+  - name: create link for iptables
+    shell: /bin/ln -s /etc/init.d/iptables-persistent /etc/init.d/iptables
+
+### Install etckeeper and config
+  - name: install etckeeper
+    apt: 
+        name: etckeeper
+        state: latest
+        update_cache: yes
+
+  - name: configuring etckeeper.conf
+    lineinfile: 
+        dest: /etc/etckeeper/etckeeper.conf
+        regexp: '^VCS="bzr"'
+        line: 'VCS="git"'
+
+  - command: etckeeper init
+    args:
+        chdir: /etc/
+
+### Install ssmtp and config
+  - name: install ssmtp, bsd-mailx
+    apt: pkg={{ item }} state=latest update_cache=yes
+    with_items:
+        - ssmtp
+        - bsd-mailx
+
+  - name: configuring ssmtp
+    template:
+        src: templates/ssmtp.conf.j2
+        dest: /etc/ssmtp/ssmtp.conf
+        owner: root
+        group: root
+        mode: 0644
+
+  - name: set ssmtp aliases
+    template: 
+        src: templates/mail.rc.j2
+        dest: /etc/mail.rc
+        owner: root
+        group: root
+        mode: 0644
+
+### Install zabbix-agent and config
+  - name: downloading zabbix repo v.2.4. (deb)
+    get_url:
+        url: http://repo.zabbix.com/zabbix/2.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_2.4-1+trusty_all.deb
+        dest: /tmp
+
+  - name: installing zabbix repo v.2.4. (deb)
+    apt: 
+        deb: /tmp/zabbix-release_2.4-1+trusty_all.deb
+
+  - name: install zabbix-agent
+    apt: 
+        name: zabbix-agent
+        state: latest
+        update_cache: yes
+
+  - name: configuring zabbix-agent
+    template: 
+        src: templates/zabbix-agent2.4.j2
+        dest: /etc/zabbix/zabbix_agentd.conf
+        owner: root
+        group: root
+        mode: 0644
+
+  - name: restart zabbix-agent
+    service: 
+        name: zabbix-agent
+        state: restarted
+        enabled: yes
+
+### Install fail2ban and config
+  - name: installing fail2ban
+    apt: 
+        name: fail2ban
+        state: latest
+        update_cache: yes
+
+  - name: copy jail.conf
+    template:
+        src: templates/jail.conf.j2
+        dest: /etc/fail2ban/jail.conf
+        owner: root
+        group: root
+        mode: 0644
+
+### Install logwatch and config
+  - name: installing logwatch
+    apt: 
+        name: logwatch
+        state: latest
+        update_cache: yes
+
+  - name: mdkir /var/cache/logwatch
+    file: 
+        path: /var/cache/logwatch
+        state: directory
+        mode: 0744
+
+  - name: copy logwatch.conf
+    template:
+        src: templates/logwatch.conf.j2
+        dest: /etc/logwatch/conf/logwatch.conf
+        owner: root
+        group: root
+        mode: 0644
+
+  - name: run logwatch
+    shell: /usr/sbin/logwatch --output mail
+
+### Config ntpdate
+  - name: set NTP-server
+    lineinfile: 
+        dest: /etc/crontab
+        line: "0 * * * * root ntpdate 10.59.3.38 >/dev/null"
