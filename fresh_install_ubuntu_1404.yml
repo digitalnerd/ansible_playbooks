@@ -145,7 +145,7 @@
     file: 
         path: /var/cache/logwatch
         state: directory
-        mode: 0744
+        mode: 0755
 
   - name: copy logwatch.conf from template
     template:
