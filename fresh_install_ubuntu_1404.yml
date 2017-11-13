@@ -5,7 +5,7 @@
 
   tasks:
 
-# Update repos and distr
+### Update repos and distr
 #  - name: update distros and upgrade packages for latest versions
 #    apt: 
 #        update_cache: yes
@@ -38,7 +38,7 @@
         state: latest
         update_cache: yes
 
-  - name: copy iptables rules
+  - name: copy rules.v4 from template
     template:
         src: templates/rules.v4.j2
         dest: /etc/iptables/rules.v4
@@ -56,7 +56,7 @@
         state: latest
         update_cache: yes
 
-  - name: configuring etckeeper.conf
+  - name: set VCS="git" in etckeeper.conf
     lineinfile: 
         dest: /etc/etckeeper/etckeeper.conf
         regexp: '^VCS="bzr"'
@@ -67,13 +67,13 @@
         chdir: /etc/
 
 ### Install ssmtp and config
-  - name: install ssmtp, bsd-mailx
+  - name: install ssmtp ans bsd-mailx
     apt: pkg={{ item }} state=latest update_cache=yes
     with_items:
         - ssmtp
         - bsd-mailx
 
-  - name: configuring ssmtp
+  - name: copy ssmtp.conf from template
     template:
         src: templates/ssmtp.conf.j2
         dest: /etc/ssmtp/ssmtp.conf
@@ -81,7 +81,7 @@
         group: root
         mode: 0644
 
-  - name: set ssmtp aliases
+  - name: copy mail.rc from template
     template: 
         src: templates/mail.rc.j2
         dest: /etc/mail.rc
@@ -90,12 +90,12 @@
         mode: 0644
 
 ### Install zabbix-agent and config
-  - name: downloading zabbix repo v.2.4. (deb)
+  - name: download zabbix repo v.2.4. (deb)
     get_url:
         url: http://repo.zabbix.com/zabbix/2.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_2.4-1+trusty_all.deb
         dest: /tmp
 
-  - name: installing zabbix repo v.2.4. (deb)
+  - name: install zabbix repo v.2.4. (deb)
     apt: 
         deb: /tmp/zabbix-release_2.4-1+trusty_all.deb
 
@@ -105,7 +105,7 @@
         state: latest
         update_cache: yes
 
-  - name: configuring zabbix-agent
+  - name: copy zabbix_agentd.conf from template
     template: 
         src: templates/zabbix-agent2.4.j2
         dest: /etc/zabbix/zabbix_agentd.conf
@@ -120,13 +120,13 @@
         enabled: yes
 
 ### Install fail2ban and config
-  - name: installing fail2ban
+  - name: install fail2ban
     apt: 
         name: fail2ban
         state: latest
         update_cache: yes
 
-  - name: copy jail.conf
+  - name: copy jail.conf from template
     template:
         src: templates/jail.conf.j2
         dest: /etc/fail2ban/jail.conf
@@ -135,7 +135,7 @@
         mode: 0644
 
 ### Install logwatch and config
-  - name: installing logwatch
+  - name: install logwatch
     apt: 
         name: logwatch
         state: latest
@@ -147,7 +147,7 @@
         state: directory
         mode: 0744
 
-  - name: copy logwatch.conf
+  - name: copy logwatch.conf from template
     template:
         src: templates/logwatch.conf.j2
         dest: /etc/logwatch/conf/logwatch.conf
@@ -155,7 +155,7 @@
         group: root
         mode: 0644
 
-  - name: run logwatch
+  - name: execute logwatch --output mail
     shell: /usr/sbin/logwatch --output mail
 
 ### Config ntpdate
