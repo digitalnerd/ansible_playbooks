@@ -68,7 +68,7 @@
 
 ### Install ssmtp and config
   - name: install ssmtp ans bsd-mailx
-    apt: pkg={{ item }} state=latest update_cache=yes
+    apt: name={{ item }} state=latest update_cache=yes
     with_items:
         - ssmtp
         - bsd-mailx
