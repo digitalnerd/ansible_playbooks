@@ -1,2 +1,7 @@
 ---
+linuxusers:
+ - { user: 'ivanov_i', comment: 'Ivanov Ivan', password: '$1$Pu/lIpZB$NFJSmNf3M5prG9Xe/D6TO0', groups: "{{ main_grp }}" }
+ - { user: 'petrov_p', comment: 'Petrov Petr', password: '$1$Pu/lIpZB$NFJSmNf3M5prG9Xe/D6TO0', groups: " {{ main_grp }}" }
 
+voipusers:
+ - { user: 'sidorov_s', comment: 'Sidorov Semen', password: '$1$Pu/lIpZB$NFJSmNf3M5prG9Xe/D6TO0', groups: "{{ main_grp }}" }

@@ -1,0 +1,4 @@
+---
+- name: collect hosts for mail
+  local_action: shell echo "{{inventory_hostname}}" >> /tmp/changed_hosts.txt
+  when: task.changed == True

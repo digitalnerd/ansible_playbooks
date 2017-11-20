@@ -1,0 +1,6 @@
+---
+- name: add sudo rules
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: '^%{{ group }}'
+    line: '%{{ group }} {{ rule }}'

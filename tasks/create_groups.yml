@@ -1,0 +1,5 @@
+---
+- name: add linux group to server
+  group:
+    name: '{{ group }}'
+    state: present
