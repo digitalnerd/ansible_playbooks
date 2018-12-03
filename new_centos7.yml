@@ -16,6 +16,7 @@
         name: user
         password: '$6$2CQHpdCl$Wwk39bZfnYJOwKMK96xSfoCeViiVTvkqIaxu56RdUZMfhX7pkucxzf/HuMw6a.7LbqD6XKG0vwbIyQkzWyAf11'
         groups: wheel
+        append: yes
 
   - name: Copy ssh pub key
     authorized_key:
@@ -26,7 +27,7 @@
 ### Set hostname
   - name: Set hostname
     hostname:
-        name: srv1.local
+        name: node2.local
 
 ### Set timezone Europe/Moscow
   - name: Set timezone Europe/Moscow
