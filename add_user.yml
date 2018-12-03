@@ -1,0 +1,22 @@
+---
+- hosts: testing
+
+  tasks:
+
+  - name: Set global UMASK (022 like a root)
+    lineinfile:
+      path: /etc/profile
+      regexp: 'umask 002'
+      line: 'umask 022'
+
+  - name: Add user "user" account
+    user:
+      name: user
+      groups: whell
+      append: yes
+
+  - name: Copy SSH Pub Key
+    authorized_key:
+      user: user
+      state: present
+      key: "{{ lookup('file', '/home/user/.ssh/id_rsa.pub') }}"

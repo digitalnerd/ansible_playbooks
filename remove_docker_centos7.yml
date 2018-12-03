@@ -1,0 +1,14 @@
+---
+- hosts: testing
+
+  tasks:
+
+  - name: Uninstall Docker CE
+    yum:
+      name: docker-ce
+      state: absent
+
+  - name: Remove Docker Files
+    file:
+      path: /var/lib/docker
+      state: absent
