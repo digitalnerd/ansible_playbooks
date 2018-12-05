@@ -12,7 +12,7 @@
   - name: Add user "user" account
     user:
       name: user
-      groups: whell
+      groups: wheel
       append: yes
 
   - name: Copy SSH Pub Key
