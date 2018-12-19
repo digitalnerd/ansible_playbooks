@@ -6,7 +6,7 @@
 ### Set hostname
   - name: Set hostname
     hostname:
-        name: node2.local
+        name: node1.local
 
 ### Set timezone Europe/Moscow
   - name: Set timezone Europe/Moscow
