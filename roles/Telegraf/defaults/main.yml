@@ -1,0 +1,5 @@
+---
+telegraf_compose_dir: "/usr/lib/telegraf"
+telegraf_compose: "docker-compose.yml"
+telegraf_config_dir: "/docker/telegraf/config"
+telegraf_config: "telegraf.conf"

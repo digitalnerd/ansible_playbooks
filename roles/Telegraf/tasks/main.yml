@@ -1,0 +1,4 @@
+---
+- include: talagraf.yml
+  tags:
+    - telegraf

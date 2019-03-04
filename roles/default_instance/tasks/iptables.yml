@@ -1,0 +1,27 @@
+---
+- name: Stop & disabled firewalld
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no
+    masked: yes
+
+- name: Install iptables
+  yum:
+    name: iptables-services
+    state: latest
+
+- name: Set default iptables config from template
+  template:
+    src: templates/iptables/iptables.rules.v4.j2
+    dest: /etc/sysconfig/iptables
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Start & enable iptables
+  systemd:
+    name: iptables
+    state: started
+    enabled: yes
+    masked: no

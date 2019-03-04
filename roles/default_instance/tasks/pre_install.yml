@@ -1,0 +1,21 @@
+---
+
+- name: Set hostname
+  hostname:
+    name: node2.local
+
+- name: Set timezone Europe/Moscow
+  timezone:
+    name: Europe/Moscow
+
+### Set global UMASK (/etc/profile)
+- name: Set global UMASK (022 like a root)
+  lineinfile:
+    path: /etc/profile
+    regexp: 'umask 002'
+    line: 'umask 022'
+
+- name: Disable SELinux
+  selinux:
+    state: disabled
+

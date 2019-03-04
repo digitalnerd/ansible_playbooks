@@ -1,0 +1,9 @@
+# Prometheus format
+[[outputs.prometheus_client]]
+    listen = "{{ ansible_fqdn }}:9126"
+
+# Docker metrics
+[[inputs.docker]]
+  endpoint = "unix:///var/run/docker.sock"
+  container_names = []
+  name_suffix = "_docker"

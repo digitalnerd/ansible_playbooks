@@ -1,0 +1,6 @@
+---
+- include: pre_install.yml
+- include: default_packages.yml
+- include: iptables.yml
+- include: file2ban.yml
+- include: docker.yml

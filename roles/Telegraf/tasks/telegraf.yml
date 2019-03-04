@@ -1,0 +1,27 @@
+---
+- name: Create Telegraf dockcer-compose directory
+  file:
+    path: "{{ telegraf_compose_dir"
+    state: directory
+    mode: "o=rx"
+
+- name: Create Telegraf config directory
+  file:
+    path: "{{ telegraf_config_dir }}"
+    state: directory
+    mode: "o=rx"
+
+- name: "Create {{ telegraf_compose }} file from template"
+  template:
+    src: "templates/telegraf/{{ telegraf_compose }}.j2"
+    dest: "{{ telegraf_compose_dir }}/{{ telegraf_compose }}"
+
+- name: "Create {{ telegraf_config }} config file"
+  template:
+    src: "templates/telegraf/{{ telegraf_config }}.j2"
+    dest: "{{ telegraf_config_dir }}/{{ telegraf_config }}"
+
+- name: Run telegraf via docker-compose
+  docker_service:
+    project_src: "{{ telegraf_compose_dir }}"
+    state: present
